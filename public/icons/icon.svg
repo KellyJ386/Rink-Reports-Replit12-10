@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background -->
+  <rect width="512" height="512" rx="64" fill="#002244"/>
+
+  <!-- Ice rink shape -->
+  <rect x="56" y="96" width="400" height="320" rx="80" fill="#69BE28" opacity="0.2"/>
+  <rect x="56" y="96" width="400" height="320" rx="80" fill="none" stroke="#69BE28" stroke-width="8"/>
+
+  <!-- Center line -->
+  <line x1="256" y1="96" x2="256" y2="416" stroke="#69BE28" stroke-width="4"/>
+
+  <!-- Center circle -->
+  <circle cx="256" cy="256" r="48" fill="none" stroke="#69BE28" stroke-width="4"/>
+
+  <!-- Goal lines -->
+  <line x1="120" y1="96" x2="120" y2="416" stroke="#A5ACAF" stroke-width="3"/>
+  <line x1="392" y1="96" x2="392" y2="416" stroke="#A5ACAF" stroke-width="3"/>
+
+  <!-- Blue lines -->
+  <line x1="188" y1="96" x2="188" y2="416" stroke="#4A90D9" stroke-width="4"/>
+  <line x1="324" y1="96" x2="324" y2="416" stroke="#4A90D9" stroke-width="4"/>
+
+  <!-- MFO text -->
+  <text x="256" y="480" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="bold" font-size="48" fill="white">MFO</text>
+</svg>

@@ -31,3 +31,7 @@ export type { SpinnerProps, LoadingOverlayProps } from './Spinner';
 
 export { Toast, ToastContainer } from './Toast';
 export type { ToastProps, ToastContainerProps, ToastType } from './Toast';
+
+export { ErrorBoundary } from './ErrorBoundary';
+
+export { LoadingSpinner, LoadingPage } from './LoadingSpinner';

@@ -3,12 +3,16 @@ import { Outlet } from 'react-router-dom';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
 import { MobileNav } from './MobileNav';
+import { InstallPrompt, OfflineIndicator, UpdatePrompt } from '../pwa';
 
 export function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-wolf-50">
+      {/* Offline indicator banner */}
+      <OfflineIndicator />
+
       {/* Mobile navigation overlay */}
       <MobileNav isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
@@ -27,6 +31,10 @@ export function AppLayout() {
           </div>
         </main>
       </div>
+
+      {/* PWA prompts */}
+      <InstallPrompt />
+      <UpdatePrompt />
     </div>
   );
 }
