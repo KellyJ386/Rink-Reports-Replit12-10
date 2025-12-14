@@ -22,6 +22,7 @@ import { UserManagement } from '../pages/admin/UserManagement';
 import { FacilitySettings } from '../pages/admin/FacilitySettings';
 import { RinkSettings } from '../pages/admin/RinkSettings';
 import { ResurfacerSettings } from '../pages/admin/ResurfacerSettings';
+import { ThresholdSettings } from '../pages/admin/ThresholdSettings';
 import { Login } from '../pages/auth/Login';
 
 export const router = createBrowserRouter([
@@ -124,6 +125,10 @@ export const router = createBrowserRouter([
           {
             path: 'resurfacers',
             element: <ResurfacerSettings />,
+          },
+          {
+            path: 'thresholds',
+            element: <ThresholdSettings />,
           },
         ],
       },

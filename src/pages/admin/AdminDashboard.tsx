@@ -1,8 +1,26 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardHeader, CardContent } from '../../components/ui';
-import { Users, Building2, Gauge, Snowflake, FileEdit } from 'lucide-react';
+import { Users, Building2, Gauge, Snowflake, Sliders } from 'lucide-react';
+import { getAdminStats } from '../../services/admin-service';
 
 export function AdminDashboard() {
+  const [stats, setStats] = useState({
+    activeUsers: 0,
+    totalRinks: 0,
+    activeResurfacers: 0,
+  });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadStats() {
+      const data = await getAdminStats();
+      setStats(data);
+      setIsLoading(false);
+    }
+    loadStats();
+  }, []);
+
   const adminSections = [
     {
       name: 'User Management',
@@ -32,6 +50,13 @@ export function AdminDashboard() {
       href: '/admin/resurfacers',
       color: 'bg-action',
     },
+    {
+      name: 'Threshold Settings',
+      description: 'Configure alert thresholds and targets',
+      icon: Sliders,
+      href: '/admin/thresholds',
+      color: 'bg-navy',
+    },
   ];
 
   return (
@@ -43,13 +68,15 @@ export function AdminDashboard() {
       </div>
 
       {/* Quick stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-wolf-600">Active Users</p>
-                <p className="text-2xl font-display font-bold text-navy mt-1">12</p>
+                <p className="text-2xl font-display font-bold text-navy mt-1">
+                  {isLoading ? '-' : stats.activeUsers}
+                </p>
               </div>
               <div className="p-2 bg-navy rounded-lg">
                 <Users className="h-5 w-5 text-white" />
@@ -62,7 +89,9 @@ export function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-wolf-600">Rinks</p>
-                <p className="text-2xl font-display font-bold text-navy mt-1">2</p>
+                <p className="text-2xl font-display font-bold text-navy mt-1">
+                  {isLoading ? '-' : stats.totalRinks}
+                </p>
               </div>
               <div className="p-2 bg-action rounded-lg">
                 <Gauge className="h-5 w-5 text-white" />
@@ -75,7 +104,9 @@ export function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-wolf-600">Resurfacers</p>
-                <p className="text-2xl font-display font-bold text-navy mt-1">3</p>
+                <p className="text-2xl font-display font-bold text-navy mt-1">
+                  {isLoading ? '-' : stats.activeResurfacers}
+                </p>
               </div>
               <div className="p-2 bg-navy rounded-lg">
                 <Snowflake className="h-5 w-5 text-white" />
@@ -83,23 +114,10 @@ export function AdminDashboard() {
             </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-wolf-600">Custom Forms</p>
-                <p className="text-2xl font-display font-bold text-navy mt-1">5</p>
-              </div>
-              <div className="p-2 bg-action rounded-lg">
-                <FileEdit className="h-5 w-5 text-white" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Admin sections grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {adminSections.map((section) => (
           <Link key={section.href} to={section.href}>
             <Card hoverable className="h-full">
@@ -133,12 +151,12 @@ export function AdminDashboard() {
               <dd className="text-sm font-medium text-navy mt-1">Development</dd>
             </div>
             <div>
-              <dt className="text-sm text-wolf-600">Database Status</dt>
-              <dd className="text-sm font-medium text-action mt-1">Connected</dd>
+              <dt className="text-sm text-wolf-600">Storage</dt>
+              <dd className="text-sm font-medium text-action mt-1">Local (IndexedDB)</dd>
             </div>
             <div>
-              <dt className="text-sm text-wolf-600">Last Sync</dt>
-              <dd className="text-sm font-medium text-navy mt-1">Just now</dd>
+              <dt className="text-sm text-wolf-600">Sync Status</dt>
+              <dd className="text-sm font-medium text-wolf-500 mt-1">Offline Mode</dd>
             </div>
           </dl>
         </CardContent>

@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardHeader, CardContent, Button } from '../components/ui';
 import { useAuth } from '../contexts/AuthContext';
@@ -9,52 +10,133 @@ import {
   AlertTriangle,
   Plus,
   ArrowRight,
+  Moon,
+  Scissors,
 } from 'lucide-react';
+import { getTodayIceMakesCount, getRecentIceMakes } from '../services/ice-make-service';
+import { getTodayCircleChecks, getRecentCircleChecks } from '../services/circle-check-service';
+import { getRecentMeasurements } from '../services/ice-depth-service';
+import { formatDate } from '../lib/utils';
+import type { IceMakeLog, CircleCheckLog, IceDepthMeasurement } from '../types';
+
+interface ActivityItem {
+  type: 'ice_make' | 'measurement' | 'circle_check' | 'alert';
+  description: string;
+  time: string;
+  timestamp: Date;
+}
 
 export function Dashboard() {
   const { user } = useAuth();
 
-  // Demo data for the dashboard
+  // Live data state
+  const [todayIceMakes, setTodayIceMakes] = useState(0);
+  const [todayCircleChecks, setTodayCircleChecks] = useState(0);
+  const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([]);
+  const [uncheckedMachines, setUncheckedMachines] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load dashboard data
+  useEffect(() => {
+    async function loadData() {
+      setIsLoading(true);
+      try {
+        const [iceMakeCount, circleChecks, recentIceMakes, recentCircles, recentMeasurements] = await Promise.all([
+          getTodayIceMakesCount(),
+          getTodayCircleChecks(),
+          getRecentIceMakes(5),
+          getRecentCircleChecks(5),
+          getRecentMeasurements(5),
+        ]);
+
+        setTodayIceMakes(iceMakeCount);
+        setTodayCircleChecks(circleChecks.length);
+
+        // Build activity feed
+        const activities: ActivityItem[] = [];
+
+        recentIceMakes.forEach((log: IceMakeLog) => {
+          activities.push({
+            type: 'ice_make',
+            description: `Ice resurfacing completed - ${log.cut_type} cut`,
+            time: formatDate(log.created_at),
+            timestamp: new Date(log.created_at),
+          });
+        });
+
+        recentCircles.forEach((check: CircleCheckLog) => {
+          activities.push({
+            type: 'circle_check',
+            description: `Circle check ${check.passed ? 'passed' : 'failed'}`,
+            time: formatDate(check.created_at),
+            timestamp: new Date(check.created_at),
+          });
+        });
+
+        recentMeasurements.forEach((measurement: IceDepthMeasurement) => {
+          activities.push({
+            type: 'measurement',
+            description: `Ice depth check recorded - Avg: ${measurement.avg_depth.toFixed(1)}mm`,
+            time: formatDate(measurement.checked_at),
+            timestamp: new Date(measurement.checked_at),
+          });
+        });
+
+        // Sort by timestamp descending
+        activities.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+        setRecentActivity(activities.slice(0, 5));
+
+        // Check which machines haven't been checked
+        const checkedMachineIds = new Set(circleChecks.map((c: CircleCheckLog) => c.resurfacer_id));
+        const allMachines = [
+          { id: 'z1', name: 'Zamboni #1' },
+          { id: 'z2', name: 'Zamboni #2' },
+        ];
+        setUncheckedMachines(
+          allMachines.filter((m) => !checkedMachineIds.has(m.id)).map((m) => m.name)
+        );
+      } catch (error) {
+        console.error('Failed to load dashboard data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
   const stats = [
     {
-      name: 'Ice Depth Checks',
-      value: '12',
-      change: '+2 this week',
-      icon: Ruler,
-      href: '/ice-depth',
-      color: 'bg-action',
-    },
-    {
       name: 'Ice Makes Today',
-      value: '8',
-      change: '4 pending',
+      value: isLoading ? '-' : todayIceMakes.toString(),
+      change: 'Resurfacing runs',
       icon: Snowflake,
-      href: '/ice-operations',
-      color: 'bg-navy',
+      href: '/ice-ops/ice-makes',
+      color: 'bg-blue-500',
     },
     {
-      name: 'Circle Checks',
-      value: '24',
-      change: 'All passed',
+      name: 'Circle Checks Today',
+      value: isLoading ? '-' : todayCircleChecks.toString(),
+      change: uncheckedMachines.length > 0 ? `${uncheckedMachines.length} pending` : 'All complete',
       icon: ClipboardCheck,
-      href: '/ice-operations/circle-check/new',
-      color: 'bg-action',
+      href: '/ice-ops/circle-checks',
+      color: uncheckedMachines.length > 0 ? 'bg-amber-500' : 'bg-action',
     },
     {
-      name: 'Avg Ice Depth',
-      value: '32mm',
-      change: 'Within range',
-      icon: TrendingUp,
-      href: '/ice-depth',
+      name: 'Ice Depth',
+      value: 'Measure',
+      change: 'Start new check',
+      icon: Ruler,
+      href: '/ice-depth/new',
       color: 'bg-navy',
     },
-  ];
-
-  const recentActivity = [
-    { type: 'ice_make', description: 'Ice resurfacing completed on Rink A', time: '10 min ago' },
-    { type: 'measurement', description: 'Ice depth check recorded', time: '1 hour ago' },
-    { type: 'circle_check', description: 'Pre-operation check passed', time: '2 hours ago' },
-    { type: 'alert', description: 'Low ice depth warning on Rink B', time: '3 hours ago' },
+    {
+      name: 'End of Day',
+      value: 'Report',
+      change: 'Submit daily summary',
+      icon: Moon,
+      href: '/ice-ops/end-of-day/new',
+      color: 'bg-navy',
+    },
   ];
 
   return (
@@ -75,13 +157,33 @@ export function Dashboard() {
               New Measurement
             </Button>
           </Link>
-          <Link to="/ice-operations/ice-make/new">
+          <Link to="/ice-ops/ice-make/new">
             <Button leftIcon={<Plus className="h-4 w-4" />}>
               Log Ice Make
             </Button>
           </Link>
         </div>
       </div>
+
+      {/* Alert for unchecked machines */}
+      {uncheckedMachines.length > 0 && (
+        <Card className="bg-amber-50 border-amber-200">
+          <CardContent className="py-4">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5" />
+              <div className="flex-1">
+                <p className="font-medium text-amber-800">Circle Checks Needed</p>
+                <p className="text-sm text-amber-700 mt-1">
+                  {uncheckedMachines.join(', ')} {uncheckedMachines.length === 1 ? 'hasn\'t' : 'haven\'t'} been checked today
+                </p>
+              </div>
+              <Link to="/ice-ops/circle-check/new">
+                <Button size="sm" variant="danger">Start Check</Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Stats grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -111,96 +213,115 @@ export function Dashboard() {
             title="Recent Activity"
             description="Latest operations and measurements"
             action={
-              <Button variant="ghost" size="sm" rightIcon={<ArrowRight className="h-4 w-4" />}>
-                View All
-              </Button>
+              <Link to="/ice-ops">
+                <Button variant="ghost" size="sm" rightIcon={<ArrowRight className="h-4 w-4" />}>
+                  View All
+                </Button>
+              </Link>
             }
           />
           <CardContent>
-            <ul className="divide-y divide-wolf-200">
-              {recentActivity.map((activity, index) => (
-                <li key={index} className="py-3 first:pt-0 last:pb-0">
-                  <div className="flex items-start gap-3">
-                    <div
-                      className={`mt-1 h-2 w-2 rounded-full ${
-                        activity.type === 'alert' ? 'bg-warning' : 'bg-action'
-                      }`}
-                    />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-navy">{activity.description}</p>
-                      <p className="text-xs text-wolf-500 mt-1">{activity.time}</p>
+            {isLoading ? (
+              <p className="text-wolf-500 text-center py-4">Loading activity...</p>
+            ) : recentActivity.length === 0 ? (
+              <p className="text-wolf-500 text-center py-4">No recent activity</p>
+            ) : (
+              <ul className="divide-y divide-wolf-200">
+                {recentActivity.map((activity, index) => (
+                  <li key={index} className="py-3 first:pt-0 last:pb-0">
+                    <div className="flex items-start gap-3">
+                      <div
+                        className={`mt-1 h-2 w-2 rounded-full ${
+                          activity.type === 'alert' ? 'bg-warning' :
+                          activity.type === 'ice_make' ? 'bg-blue-500' :
+                          activity.type === 'circle_check' ? 'bg-action' : 'bg-navy'
+                        }`}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-navy">{activity.description}</p>
+                        <p className="text-xs text-wolf-500 mt-1">{activity.time}</p>
+                      </div>
                     </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
+                  </li>
+                ))}
+              </ul>
+            )}
           </CardContent>
         </Card>
 
-        {/* Alerts & Notifications */}
+        {/* Quick Actions */}
         <Card>
-          <CardHeader title="Alerts" description="Items requiring attention" />
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex items-start gap-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-                <AlertTriangle className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium text-navy">Low Ice Depth</p>
-                  <p className="text-xs text-wolf-600 mt-1">
-                    Rink B center ice measuring 22mm - consider adding water.
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 p-3 bg-wolf-50 rounded-lg border border-wolf-200">
-                <ClipboardCheck className="h-5 w-5 text-wolf-500 flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium text-navy">Blade Change Due</p>
-                  <p className="text-xs text-wolf-600 mt-1">
-                    Zamboni #1 approaching 150 hours since last change.
-                  </p>
-                </div>
-              </div>
-            </div>
+          <CardHeader title="Quick Actions" description="Common tasks" />
+          <CardContent className="space-y-2">
+            <Link
+              to="/ice-ops/ice-make/new"
+              className="flex items-center gap-3 p-3 rounded-lg border border-wolf-200 hover:border-action hover:bg-action-50 transition-colors"
+            >
+              <Snowflake className="h-5 w-5 text-blue-500" />
+              <span className="text-sm font-medium text-navy">Log Ice Make</span>
+            </Link>
+            <Link
+              to="/ice-ops/circle-check/new"
+              className="flex items-center gap-3 p-3 rounded-lg border border-wolf-200 hover:border-action hover:bg-action-50 transition-colors"
+            >
+              <ClipboardCheck className="h-5 w-5 text-action" />
+              <span className="text-sm font-medium text-navy">Circle Check</span>
+            </Link>
+            <Link
+              to="/ice-depth/new"
+              className="flex items-center gap-3 p-3 rounded-lg border border-wolf-200 hover:border-action hover:bg-action-50 transition-colors"
+            >
+              <Ruler className="h-5 w-5 text-navy" />
+              <span className="text-sm font-medium text-navy">Measure Ice Depth</span>
+            </Link>
+            <Link
+              to="/ice-ops/blade-change/new"
+              className="flex items-center gap-3 p-3 rounded-lg border border-wolf-200 hover:border-action hover:bg-action-50 transition-colors"
+            >
+              <Scissors className="h-5 w-5 text-amber-500" />
+              <span className="text-sm font-medium text-navy">Log Blade Change</span>
+            </Link>
+            <Link
+              to="/ice-ops/end-of-day/new"
+              className="flex items-center gap-3 p-3 rounded-lg border border-wolf-200 hover:border-action hover:bg-action-50 transition-colors"
+            >
+              <Moon className="h-5 w-5 text-navy" />
+              <span className="text-sm font-medium text-navy">End of Day Report</span>
+            </Link>
           </CardContent>
         </Card>
       </div>
 
-      {/* Quick Actions */}
-      <Card>
-        <CardHeader title="Quick Actions" description="Common tasks and operations" />
-        <CardContent>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <Link
-              to="/ice-depth/new"
-              className="flex flex-col items-center p-4 rounded-lg border-2 border-wolf-200 hover:border-action hover:bg-action-50 transition-colors"
-            >
-              <Ruler className="h-8 w-8 text-navy mb-2" />
-              <span className="text-sm font-medium text-navy text-center">Measure Ice</span>
-            </Link>
-            <Link
-              to="/ice-operations/ice-make/new"
-              className="flex flex-col items-center p-4 rounded-lg border-2 border-wolf-200 hover:border-action hover:bg-action-50 transition-colors"
-            >
-              <Snowflake className="h-8 w-8 text-navy mb-2" />
-              <span className="text-sm font-medium text-navy text-center">Log Ice Make</span>
-            </Link>
-            <Link
-              to="/ice-operations/circle-check/new"
-              className="flex flex-col items-center p-4 rounded-lg border-2 border-wolf-200 hover:border-action hover:bg-action-50 transition-colors"
-            >
-              <ClipboardCheck className="h-8 w-8 text-navy mb-2" />
-              <span className="text-sm font-medium text-navy text-center">Circle Check</span>
-            </Link>
-            <Link
-              to="/ice-operations/end-of-day/new"
-              className="flex flex-col items-center p-4 rounded-lg border-2 border-wolf-200 hover:border-action hover:bg-action-50 transition-colors"
-            >
-              <TrendingUp className="h-8 w-8 text-navy mb-2" />
-              <span className="text-sm font-medium text-navy text-center">End of Day</span>
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Module Links */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <Link to="/ice-depth">
+          <Card hoverable className="h-full bg-navy-50 border-navy-200">
+            <CardContent className="py-6 text-center">
+              <Ruler className="h-10 w-10 text-navy mx-auto mb-3" />
+              <h3 className="font-semibold text-navy">Ice Depth Module</h3>
+              <p className="text-sm text-wolf-600 mt-1">Measure and track ice thickness</p>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link to="/ice-ops">
+          <Card hoverable className="h-full bg-action-50 border-action-200">
+            <CardContent className="py-6 text-center">
+              <Snowflake className="h-10 w-10 text-action mx-auto mb-3" />
+              <h3 className="font-semibold text-navy">Ice Operations</h3>
+              <p className="text-sm text-wolf-600 mt-1">Daily ice maintenance tasks</p>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link to="/admin">
+          <Card hoverable className="h-full bg-wolf-50 border-wolf-200">
+            <CardContent className="py-6 text-center">
+              <TrendingUp className="h-10 w-10 text-wolf-600 mx-auto mb-3" />
+              <h3 className="font-semibold text-navy">Admin Panel</h3>
+              <p className="text-sm text-wolf-600 mt-1">Settings and configuration</p>
+            </CardContent>
+          </Card>
+        </Link>
+      </div>
     </div>
   );
 }
