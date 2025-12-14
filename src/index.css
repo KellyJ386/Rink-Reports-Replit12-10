@@ -1,0 +1,139 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply font-body text-navy antialiased;
+  }
+
+  body {
+    @apply bg-wolf-50 min-h-screen;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-semibold tracking-tight;
+  }
+
+  h1 {
+    @apply text-3xl md:text-4xl;
+  }
+
+  h2 {
+    @apply text-2xl md:text-3xl;
+  }
+
+  h3 {
+    @apply text-xl md:text-2xl;
+  }
+
+  h4 {
+    @apply text-lg md:text-xl;
+  }
+}
+
+@layer components {
+  /* Card component */
+  .card {
+    @apply bg-white rounded-xl border-2 border-wolf-200 shadow-card p-4 md:p-6;
+  }
+
+  .card-hover {
+    @apply transition-shadow duration-200 hover:shadow-card-hover;
+  }
+
+  /* Button base styles */
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-lg font-display font-medium transition-colors duration-200 min-h-touch;
+  }
+
+  .btn-primary {
+    @apply btn bg-navy text-white hover:bg-navy-600 focus:ring-2 focus:ring-navy-400 focus:ring-offset-2;
+  }
+
+  .btn-secondary {
+    @apply btn bg-wolf-100 text-navy hover:bg-wolf-200 focus:ring-2 focus:ring-wolf-400 focus:ring-offset-2;
+  }
+
+  .btn-success {
+    @apply btn bg-action text-white hover:bg-action-600 focus:ring-2 focus:ring-action-400 focus:ring-offset-2;
+  }
+
+  .btn-danger {
+    @apply btn bg-danger text-white hover:bg-red-700 focus:ring-2 focus:ring-red-400 focus:ring-offset-2;
+  }
+
+  /* Form input styles */
+  .input {
+    @apply w-full px-4 py-3 rounded-lg border-2 border-wolf-300 bg-white text-navy placeholder-wolf-500 font-body;
+    @apply focus:border-navy focus:ring-2 focus:ring-navy-200 focus:outline-none;
+    @apply transition-colors duration-200;
+  }
+
+  .input-error {
+    @apply border-danger focus:border-danger focus:ring-red-200;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-navy mb-1;
+  }
+
+  .help-text {
+    @apply text-sm text-wolf-600 mt-1;
+  }
+
+  .error-text {
+    @apply text-sm text-danger mt-1;
+  }
+
+  /* Status badges for ice depth */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-ideal {
+    @apply badge bg-action-100 text-action-700;
+  }
+
+  .badge-warning {
+    @apply badge bg-yellow-100 text-yellow-800;
+  }
+
+  .badge-critical {
+    @apply badge bg-red-100 text-red-800;
+  }
+
+  /* Navigation */
+  .nav-link {
+    @apply flex items-center gap-3 px-4 py-3 rounded-lg text-wolf-600 font-medium transition-colors duration-200;
+    @apply hover:bg-wolf-100 hover:text-navy;
+  }
+
+  .nav-link-active {
+    @apply nav-link bg-navy text-white hover:bg-navy-600 hover:text-white;
+  }
+}
+
+@layer utilities {
+  /* Touch-friendly tap targets */
+  .touch-target {
+    @apply min-w-touch min-h-touch;
+  }
+
+  /* Truncate text with ellipsis */
+  .truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .truncate-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
