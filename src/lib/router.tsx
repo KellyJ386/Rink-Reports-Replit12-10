@@ -6,11 +6,17 @@ import { Dashboard } from '../pages/Dashboard';
 import { IceDepthList } from '../pages/ice-depth/IceDepthList';
 import { IceDepthNew } from '../pages/ice-depth/IceDepthNew';
 import { IceDepthDetail } from '../pages/ice-depth/IceDepthDetail';
-import { IceMakeList } from '../pages/ice-operations/IceMakeList';
-import { IceMakeNew } from '../pages/ice-operations/IceMakeNew';
-import { CircleCheckNew } from '../pages/ice-operations/CircleCheckNew';
-import { BladeChangeNew } from '../pages/ice-operations/BladeChangeNew';
-import { EndOfDayNew } from '../pages/ice-operations/EndOfDayNew';
+import {
+  IceOpsLanding,
+  IceMakeNew,
+  IceMakeList,
+  CircleCheckNew,
+  CircleCheckList,
+  BladeChangeNew,
+  BladeChangeList,
+  EndOfDayNew,
+  EndOfDayList,
+} from '../pages/ice-ops';
 import { AdminDashboard } from '../pages/admin/AdminDashboard';
 import { UserManagement } from '../pages/admin/UserManagement';
 import { FacilitySettings } from '../pages/admin/FacilitySettings';
@@ -51,23 +57,43 @@ export const router = createBrowserRouter([
       },
       // Ice Operations Module
       {
-        path: 'ice-operations',
+        path: 'ice-ops',
         children: [
           {
             index: true,
+            element: <IceOpsLanding />,
+          },
+          // Ice Make
+          {
+            path: 'ice-makes',
             element: <IceMakeList />,
           },
           {
             path: 'ice-make/new',
             element: <IceMakeNew />,
           },
+          // Circle Check
+          {
+            path: 'circle-checks',
+            element: <CircleCheckList />,
+          },
           {
             path: 'circle-check/new',
             element: <CircleCheckNew />,
           },
+          // Blade Change
+          {
+            path: 'blade-changes',
+            element: <BladeChangeList />,
+          },
           {
             path: 'blade-change/new',
             element: <BladeChangeNew />,
+          },
+          // End of Day
+          {
+            path: 'end-of-day',
+            element: <EndOfDayList />,
           },
           {
             path: 'end-of-day/new',
