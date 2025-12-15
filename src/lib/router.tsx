@@ -1,34 +1,45 @@
+import { lazy, Suspense } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { AppLayout } from '../components/layout/AppLayout';
+import { LoadingPage } from '../components/ui';
 
-// Page imports
-import { Dashboard } from '../pages/Dashboard';
-import { IceDepthList } from '../pages/ice-depth/IceDepthList';
-import { IceDepthNew } from '../pages/ice-depth/IceDepthNew';
-import { IceDepthDetail } from '../pages/ice-depth/IceDepthDetail';
-import {
-  IceOpsLanding,
-  IceMakeNew,
-  IceMakeList,
-  CircleCheckNew,
-  CircleCheckList,
-  BladeChangeNew,
-  BladeChangeList,
-  EndOfDayNew,
-  EndOfDayList,
-} from '../pages/ice-ops';
-import { AdminDashboard } from '../pages/admin/AdminDashboard';
-import { UserManagement } from '../pages/admin/UserManagement';
-import { FacilitySettings } from '../pages/admin/FacilitySettings';
-import { RinkSettings } from '../pages/admin/RinkSettings';
-import { ResurfacerSettings } from '../pages/admin/ResurfacerSettings';
-import { ThresholdSettings } from '../pages/admin/ThresholdSettings';
-import { Login } from '../pages/auth/Login';
+// Lazy load pages for code splitting
+const Dashboard = lazy(() => import('../pages/Dashboard').then(m => ({ default: m.Dashboard })));
+const Login = lazy(() => import('../pages/auth/Login').then(m => ({ default: m.Login })));
+
+// Ice Depth Module
+const IceDepthList = lazy(() => import('../pages/ice-depth/IceDepthList').then(m => ({ default: m.IceDepthList })));
+const IceDepthNew = lazy(() => import('../pages/ice-depth/IceDepthNew').then(m => ({ default: m.IceDepthNew })));
+const IceDepthDetail = lazy(() => import('../pages/ice-depth/IceDepthDetail').then(m => ({ default: m.IceDepthDetail })));
+
+// Ice Operations Module
+const IceOpsLanding = lazy(() => import('../pages/ice-ops/IceOpsLanding').then(m => ({ default: m.IceOpsLanding })));
+const IceMakeNew = lazy(() => import('../pages/ice-ops/IceMakeNew').then(m => ({ default: m.IceMakeNew })));
+const IceMakeList = lazy(() => import('../pages/ice-ops/IceMakeList').then(m => ({ default: m.IceMakeList })));
+const CircleCheckNew = lazy(() => import('../pages/ice-ops/CircleCheckNew').then(m => ({ default: m.CircleCheckNew })));
+const CircleCheckList = lazy(() => import('../pages/ice-ops/CircleCheckList').then(m => ({ default: m.CircleCheckList })));
+const BladeChangeNew = lazy(() => import('../pages/ice-ops/BladeChangeNew').then(m => ({ default: m.BladeChangeNew })));
+const BladeChangeList = lazy(() => import('../pages/ice-ops/BladeChangeList').then(m => ({ default: m.BladeChangeList })));
+const EndOfDayNew = lazy(() => import('../pages/ice-ops/EndOfDayNew').then(m => ({ default: m.EndOfDayNew })));
+const EndOfDayList = lazy(() => import('../pages/ice-ops/EndOfDayList').then(m => ({ default: m.EndOfDayList })));
+
+// Admin Module
+const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard').then(m => ({ default: m.AdminDashboard })));
+const UserManagement = lazy(() => import('../pages/admin/UserManagement').then(m => ({ default: m.UserManagement })));
+const FacilitySettings = lazy(() => import('../pages/admin/FacilitySettings').then(m => ({ default: m.FacilitySettings })));
+const RinkSettings = lazy(() => import('../pages/admin/RinkSettings').then(m => ({ default: m.RinkSettings })));
+const ResurfacerSettings = lazy(() => import('../pages/admin/ResurfacerSettings').then(m => ({ default: m.ResurfacerSettings })));
+const ThresholdSettings = lazy(() => import('../pages/admin/ThresholdSettings').then(m => ({ default: m.ThresholdSettings })));
+
+// Wrapper for lazy components with loading fallback
+function LazyPage({ children }: { children: React.ReactNode }) {
+  return <Suspense fallback={<LoadingPage message="Loading..." />}>{children}</Suspense>;
+}
 
 export const router = createBrowserRouter([
   {
     path: '/login',
-    element: <Login />,
+    element: <LazyPage><Login /></LazyPage>,
   },
   {
     path: '/',
@@ -36,7 +47,7 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Dashboard />,
+        element: <LazyPage><Dashboard /></LazyPage>,
       },
       // Ice Depth Module
       {
@@ -44,15 +55,15 @@ export const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <IceDepthList />,
+            element: <LazyPage><IceDepthList /></LazyPage>,
           },
           {
             path: 'new',
-            element: <IceDepthNew />,
+            element: <LazyPage><IceDepthNew /></LazyPage>,
           },
           {
             path: ':id',
-            element: <IceDepthDetail />,
+            element: <LazyPage><IceDepthDetail /></LazyPage>,
           },
         ],
       },
@@ -62,43 +73,43 @@ export const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <IceOpsLanding />,
+            element: <LazyPage><IceOpsLanding /></LazyPage>,
           },
           // Ice Make
           {
             path: 'ice-makes',
-            element: <IceMakeList />,
+            element: <LazyPage><IceMakeList /></LazyPage>,
           },
           {
             path: 'ice-make/new',
-            element: <IceMakeNew />,
+            element: <LazyPage><IceMakeNew /></LazyPage>,
           },
           // Circle Check
           {
             path: 'circle-checks',
-            element: <CircleCheckList />,
+            element: <LazyPage><CircleCheckList /></LazyPage>,
           },
           {
             path: 'circle-check/new',
-            element: <CircleCheckNew />,
+            element: <LazyPage><CircleCheckNew /></LazyPage>,
           },
           // Blade Change
           {
             path: 'blade-changes',
-            element: <BladeChangeList />,
+            element: <LazyPage><BladeChangeList /></LazyPage>,
           },
           {
             path: 'blade-change/new',
-            element: <BladeChangeNew />,
+            element: <LazyPage><BladeChangeNew /></LazyPage>,
           },
           // End of Day
           {
             path: 'end-of-day',
-            element: <EndOfDayList />,
+            element: <LazyPage><EndOfDayList /></LazyPage>,
           },
           {
             path: 'end-of-day/new',
-            element: <EndOfDayNew />,
+            element: <LazyPage><EndOfDayNew /></LazyPage>,
           },
         ],
       },
@@ -108,27 +119,27 @@ export const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <AdminDashboard />,
+            element: <LazyPage><AdminDashboard /></LazyPage>,
           },
           {
             path: 'users',
-            element: <UserManagement />,
+            element: <LazyPage><UserManagement /></LazyPage>,
           },
           {
             path: 'facility',
-            element: <FacilitySettings />,
+            element: <LazyPage><FacilitySettings /></LazyPage>,
           },
           {
             path: 'rinks',
-            element: <RinkSettings />,
+            element: <LazyPage><RinkSettings /></LazyPage>,
           },
           {
             path: 'resurfacers',
-            element: <ResurfacerSettings />,
+            element: <LazyPage><ResurfacerSettings /></LazyPage>,
           },
           {
             path: 'thresholds',
-            element: <ThresholdSettings />,
+            element: <LazyPage><ThresholdSettings /></LazyPage>,
           },
         ],
       },
