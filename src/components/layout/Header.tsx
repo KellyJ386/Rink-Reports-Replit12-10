@@ -1,6 +1,7 @@
 import { Menu, Bell, Wifi, WifiOff, User } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '../ui';
+import { FacilitySwitcher } from './FacilitySwitcher';
 import { useState, useEffect } from 'react';
 
 interface HeaderProps {
@@ -53,6 +54,9 @@ export function Header({ onMenuClick }: HeaderProps) {
               </span>
             )}
           </div>
+
+          {/* Facility Switcher */}
+          <FacilitySwitcher />
         </div>
 
         {/* Right side - Actions */}

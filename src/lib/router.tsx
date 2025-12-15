@@ -23,6 +23,9 @@ const BladeChangeList = lazy(() => import('../pages/ice-ops/BladeChangeList').th
 const EndOfDayNew = lazy(() => import('../pages/ice-ops/EndOfDayNew').then(m => ({ default: m.EndOfDayNew })));
 const EndOfDayList = lazy(() => import('../pages/ice-ops/EndOfDayList').then(m => ({ default: m.EndOfDayList })));
 
+// Reports Module
+const ReportsDashboard = lazy(() => import('../pages/reports/ReportsDashboard').then(m => ({ default: m.ReportsDashboard })));
+
 // Admin Module
 const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard').then(m => ({ default: m.AdminDashboard })));
 const UserManagement = lazy(() => import('../pages/admin/UserManagement').then(m => ({ default: m.UserManagement })));
@@ -30,6 +33,8 @@ const FacilitySettings = lazy(() => import('../pages/admin/FacilitySettings').th
 const RinkSettings = lazy(() => import('../pages/admin/RinkSettings').then(m => ({ default: m.RinkSettings })));
 const ResurfacerSettings = lazy(() => import('../pages/admin/ResurfacerSettings').then(m => ({ default: m.ResurfacerSettings })));
 const ThresholdSettings = lazy(() => import('../pages/admin/ThresholdSettings').then(m => ({ default: m.ThresholdSettings })));
+const NotificationSettings = lazy(() => import('../pages/admin/NotificationSettings').then(m => ({ default: m.NotificationSettings })));
+const FormBuilder = lazy(() => import('../pages/admin/FormBuilder').then(m => ({ default: m.FormBuilder })));
 
 // Wrapper for lazy components with loading fallback
 // eslint-disable-next-line react-refresh/only-export-components
@@ -114,6 +119,11 @@ export const router = createBrowserRouter([
           },
         ],
       },
+      // Reports Module
+      {
+        path: 'reports',
+        element: <LazyPage><ReportsDashboard /></LazyPage>,
+      },
       // Admin Module
       {
         path: 'admin',
@@ -141,6 +151,14 @@ export const router = createBrowserRouter([
           {
             path: 'thresholds',
             element: <LazyPage><ThresholdSettings /></LazyPage>,
+          },
+          {
+            path: 'notifications',
+            element: <LazyPage><NotificationSettings /></LazyPage>,
+          },
+          {
+            path: 'forms',
+            element: <LazyPage><FormBuilder /></LazyPage>,
           },
         ],
       },

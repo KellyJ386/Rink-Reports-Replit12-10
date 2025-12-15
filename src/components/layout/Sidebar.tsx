@@ -10,6 +10,9 @@ import {
   Users,
   Building2,
   Gauge,
+  BarChart3,
+  Bell,
+  FormInput,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useAuth } from '../../contexts/AuthContext';
@@ -24,6 +27,7 @@ interface NavItem {
 const mainNavItems: NavItem[] = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
   { name: 'Ice Depth', href: '/ice-depth', icon: Ruler },
+  { name: 'Reports', href: '/reports', icon: BarChart3 },
 ];
 
 const operationsNavItems: NavItem[] = [
@@ -39,6 +43,8 @@ const adminNavItems: NavItem[] = [
   { name: 'Facility', href: '/admin/facility', icon: Building2, roles: ['facility_manager'] },
   { name: 'Rinks', href: '/admin/rinks', icon: Gauge, roles: ['facility_manager', 'lead_ice_tech'] },
   { name: 'Resurfacers', href: '/admin/resurfacers', icon: Snowflake, roles: ['facility_manager', 'lead_ice_tech'] },
+  { name: 'Notifications', href: '/admin/notifications', icon: Bell, roles: ['facility_manager'] },
+  { name: 'Forms', href: '/admin/forms', icon: FormInput, roles: ['facility_manager'] },
 ];
 
 export function Sidebar() {
