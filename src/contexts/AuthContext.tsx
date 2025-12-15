@@ -27,6 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!isSupabaseConfigured()) {
       // Demo mode - use mock user
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Intentional initialization on mount
       setState({
         user: {
           id: 'demo-user-1',
@@ -155,6 +156,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {

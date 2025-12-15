@@ -3,40 +3,42 @@ import { Card, CardHeader, CardContent, Button, IceDepthBadge } from '../../comp
 import { Plus, Filter, Download, Ruler } from 'lucide-react';
 import { formatDate, formatDepth, getIceDepthStatus } from '../../lib/utils';
 
+// Demo data - computed once outside component to avoid impure function calls during render
+const DEMO_MEASUREMENTS = [
+  {
+    id: '1',
+    rink: 'Rink A',
+    template: '25-Point',
+    avg_depth: 32.5,
+    min_depth: 28.2,
+    max_depth: 38.1,
+    checked_at: '2024-12-15T10:00:00.000Z',
+    technician: 'John Smith',
+  },
+  {
+    id: '2',
+    rink: 'Rink B',
+    template: '35-Point',
+    avg_depth: 22.1,
+    min_depth: 18.5,
+    max_depth: 26.8,
+    checked_at: '2024-12-14T10:00:00.000Z',
+    technician: 'Jane Doe',
+  },
+  {
+    id: '3',
+    rink: 'Rink A',
+    template: '25-Point',
+    avg_depth: 35.2,
+    min_depth: 31.0,
+    max_depth: 40.5,
+    checked_at: '2024-12-13T10:00:00.000Z',
+    technician: 'John Smith',
+  },
+];
+
 export function IceDepthList() {
-  // Demo data
-  const measurements = [
-    {
-      id: '1',
-      rink: 'Rink A',
-      template: '25-Point',
-      avg_depth: 32.5,
-      min_depth: 28.2,
-      max_depth: 38.1,
-      checked_at: new Date().toISOString(),
-      technician: 'John Smith',
-    },
-    {
-      id: '2',
-      rink: 'Rink B',
-      template: '35-Point',
-      avg_depth: 22.1,
-      min_depth: 18.5,
-      max_depth: 26.8,
-      checked_at: new Date(Date.now() - 86400000).toISOString(),
-      technician: 'Jane Doe',
-    },
-    {
-      id: '3',
-      rink: 'Rink A',
-      template: '25-Point',
-      avg_depth: 35.2,
-      min_depth: 31.0,
-      max_depth: 40.5,
-      checked_at: new Date(Date.now() - 172800000).toISOString(),
-      technician: 'John Smith',
-    },
-  ];
+  const measurements = DEMO_MEASUREMENTS;
 
   return (
     <div className="space-y-6">

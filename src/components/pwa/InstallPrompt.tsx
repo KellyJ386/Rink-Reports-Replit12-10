@@ -15,6 +15,7 @@ export function InstallPrompt() {
       const daysSinceDismissed = (Date.now() - dismissedDate.getTime()) / (1000 * 60 * 60 * 24);
       // Show again after 7 days
       if (daysSinceDismissed < 7) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- Intentional initialization from localStorage
         setIsDismissed(true);
       }
     }

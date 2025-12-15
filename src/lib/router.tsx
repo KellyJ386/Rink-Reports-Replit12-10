@@ -32,6 +32,7 @@ const ResurfacerSettings = lazy(() => import('../pages/admin/ResurfacerSettings'
 const ThresholdSettings = lazy(() => import('../pages/admin/ThresholdSettings').then(m => ({ default: m.ThresholdSettings })));
 
 // Wrapper for lazy components with loading fallback
+// eslint-disable-next-line react-refresh/only-export-components
 function LazyPage({ children }: { children: React.ReactNode }) {
   return <Suspense fallback={<LoadingPage message="Loading..." />}>{children}</Suspense>;
 }

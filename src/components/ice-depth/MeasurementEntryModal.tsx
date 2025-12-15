@@ -36,6 +36,7 @@ export function MeasurementEntryModal({
     if (point && isOpen) {
       if (currentValue !== undefined) {
         const displayValue = unit === 'mm' ? currentValue : mmToInches(currentValue);
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- Intentional initialization when modal opens
         setInputValue(displayValue.toFixed(unit === 'mm' ? 1 : 2));
       } else {
         setInputValue('');
@@ -51,6 +52,7 @@ export function MeasurementEntryModal({
   useEffect(() => {
     if (bluetoothValue !== null && bluetoothValue !== undefined && isBluetoothConnected && useBluetoothValue) {
       const displayValue = unit === 'mm' ? bluetoothValue : mmToInches(bluetoothValue);
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Intentional sync from bluetooth device
       setInputValue(displayValue.toFixed(unit === 'mm' ? 1 : 2));
     }
   }, [bluetoothValue, isBluetoothConnected, useBluetoothValue, unit]);

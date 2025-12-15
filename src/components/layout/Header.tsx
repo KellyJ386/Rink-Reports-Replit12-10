@@ -58,10 +58,10 @@ export function Header({ onMenuClick }: HeaderProps) {
         {/* Right side - Actions */}
         <div className="flex items-center gap-3">
           {/* Notifications */}
-          <Button variant="ghost" size="sm" className="relative" aria-label="Notifications">
+          <Button variant="ghost" size="sm" className="relative" aria-label="Notifications, 3 unread">
             <Bell className="h-5 w-5" />
             {/* Notification badge */}
-            <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-danger text-white text-xs flex items-center justify-center">
+            <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-danger text-white text-xs flex items-center justify-center" aria-hidden="true">
               3
             </span>
           </Button>

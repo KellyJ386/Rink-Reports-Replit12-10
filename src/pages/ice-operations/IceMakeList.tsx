@@ -3,40 +3,42 @@ import { Card, CardHeader, CardContent, Button, Badge } from '../../components/u
 import { Plus, Filter, Download, Snowflake } from 'lucide-react';
 import { formatTime } from '../../lib/utils';
 
+// Demo data - computed once outside component to avoid impure function calls during render
+const DEMO_ICE_MAKES = [
+  {
+    id: '1',
+    rink: 'Rink A',
+    resurfacer: 'Zamboni #1',
+    operator: 'John Smith',
+    water_used: 65,
+    snow_in_tank: 45,
+    cut_type: 'wet',
+    created_at: '2024-12-15T10:00:00.000Z',
+  },
+  {
+    id: '2',
+    rink: 'Rink B',
+    resurfacer: 'Olympia #2',
+    operator: 'Jane Doe',
+    water_used: 80,
+    snow_in_tank: 60,
+    cut_type: 'dry',
+    created_at: '2024-12-15T09:00:00.000Z',
+  },
+  {
+    id: '3',
+    rink: 'Rink A',
+    resurfacer: 'Zamboni #1',
+    operator: 'John Smith',
+    water_used: 70,
+    snow_in_tank: 55,
+    cut_type: 'wet',
+    created_at: '2024-12-15T08:00:00.000Z',
+  },
+];
+
 export function IceMakeList() {
-  // Demo data
-  const iceMakes = [
-    {
-      id: '1',
-      rink: 'Rink A',
-      resurfacer: 'Zamboni #1',
-      operator: 'John Smith',
-      water_used: 65,
-      snow_in_tank: 45,
-      cut_type: 'wet',
-      created_at: new Date().toISOString(),
-    },
-    {
-      id: '2',
-      rink: 'Rink B',
-      resurfacer: 'Olympia #2',
-      operator: 'Jane Doe',
-      water_used: 80,
-      snow_in_tank: 60,
-      cut_type: 'dry',
-      created_at: new Date(Date.now() - 3600000).toISOString(),
-    },
-    {
-      id: '3',
-      rink: 'Rink A',
-      resurfacer: 'Zamboni #1',
-      operator: 'John Smith',
-      water_used: 70,
-      snow_in_tank: 55,
-      cut_type: 'wet',
-      created_at: new Date(Date.now() - 7200000).toISOString(),
-    },
-  ];
+  const iceMakes = DEMO_ICE_MAKES;
 
   return (
     <div className="space-y-6">

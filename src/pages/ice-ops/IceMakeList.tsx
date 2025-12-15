@@ -93,7 +93,8 @@ export function IceMakeList() {
                 <p className="text-sm text-blue-700">This Week</p>
                 <p className="text-3xl font-bold text-blue-800">
                   {iceMakes.filter((m) => {
-                    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+                    const now = new Date();
+                    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
                     return m.created_at >= weekAgo;
                   }).length}
                 </p>
